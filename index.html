@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Compositional Average Velocity Modeling for Efficient Diffusion Offline
+Reinforcement Learning">
+    <title>Compositional Average Velocity Modeling for Efficient Diffusion Offline
+        Reinforcement Learning</title>
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="shortcut icon" href="images/favicon.svg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Avenir, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: black;
+            background-color: #ffffff;
+            padding-top: 45px;
+        }
+
+        /* Gradient Animation */
+        @keyframes gradient-shift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(65, 105, 225, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(255, 69, 0, 0.4);
+            }
+        }
+
+        .container {
+            max-width: 975px;
+            margin: 0 auto;
+            padding: 0 22px;
+        }
+
+        header {
+            background: #ffffff;
+            color: #333;
+            padding: 30px 20px 22px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+            line-height: 1.125;
+            max-width: 975px;
+            margin-left: auto;
+            margin-right: auto;
+            background: linear-gradient(135deg, #2c3f91 0%, #35c096 30%, #44db9c 70%, #be411b 100%);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 5s ease infinite;
+        }
+
+        @media (max-width: 1100px) {
+            h1 {
+                font-size: 2.4em;
+            }
+        }
+
+        @media (max-width: 900px) {
+            h1 {
+                font-size: 2em;
+            }
+        }
+
+        .subtitle {
+            font-size: 2.2em;
+            margin-bottom: 1.5rem;
+            color: #363636;
+            font-weight: 700;
+            line-height: 1.125;
+        }
+
+        .authors {
+            font-size: 22px;
+            margin-top: 1.5rem;
+            margin-bottom: 0.85rem;
+            line-height: 1.6;
+            color: rgb(21, 131, 204);
+            font-weight: 500;
+        }
+
+        .authors a {
+            color: rgb(49, 192, 202);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .authors a:hover {
+            color: #36e4cd;
+        }
+
+        .affiliation {
+            font-size: 19px;
+            color: black;
+            margin-bottom: 1.8rem;
+            line-height: 1.6;
+        }
+
+        .author-block {
+            display: inline;
+        }
+
+        .link-block {
+            display: inline-block;
+        }
+
+        .links {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+            max-width: 975px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5em 1em;
+            background: #363636;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 290486px;
+            font-weight: 400;
+            font-size: 1rem;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            line-height: 1.5;
+            gap: 0.5em;
+        }
+
+        .btn:hover {
+            background-color: #292929;
+            color: #fff;
+        }
+
+        .btn .icon {
+            font-size: 1.1em;
+            line-height: 1;
+        }
+
+        /* Video Section */
+        .hero-video {
+            background: #ffffff;
+            padding: 30px 22px;
+            text-align: center;
+        }
+
+        .hero-video .container {
+            position: relative;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 975px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+
+        .video-wrapper iframe {
+            width: 100%;
+            height: 548px;
+            border: none;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .video-wrapper iframe {
+                height: 300px;
+            }
+        }
+
+        /* Gradient Divider */
+        .gradient-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #b0b0b0 30%, #b0b0b0 70%, transparent);
+            margin: 0 auto;
+            border: none;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+            width: 60%;
+            max-width: 600px;
+        }
+
+        /* Section Styles */
+        .section {
+            background: transparent;
+            padding: 30px 22px;
+        }
+
+        .section-alternate {
+            background: rgb(235, 235, 235);
+            background: linear-gradient(180deg, rgba(235, 235, 235, 0.3) 0%, rgba(235, 235, 235, 1) 50%, rgba(235, 235, 235, 0.3) 100%);
+            padding: 30px 22px;
+        }
+
+        .section-white {
+            background-color: #ffffff;
+            padding: 30px 22px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: black;
+            font-weight: 700;
+            line-height: 1.125;
+            text-align: center;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem 0;
+            color: black;
+            font-weight: 600;
+            line-height: 1.125;
+        }
+
+        .content {
+            line-height: 1.7;
+            font-size: 16px;
+            color: black;
+        }
+
+        .tldr {
+            background: #f5f5f5;
+            padding: 25px;
+            border-radius: 6px;
+            border-left: 4px solid #4169E1;
+            margin: 20px 0;
+            font-size: 1rem;
+            line-height: 1.7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .highlight {
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .research-question {
+            color: #0056b3;
+            /* Changed to a deeper blue for better visibility */
+            font-weight: 700;
+            font-size: 1.15em;
+            margin: 25px 0 15px 0;
+            padding: 18px 22px;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            /* Changed to a lighter gradient */
+            border-left: 4px solid #0056b3;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 86, 179, 0.1);
+        }
+
+        .media-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .media-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .media-container img:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+        }
+
+        .media-container video {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .caption {
+            margin-top: 15px;
+            font-style: normal;
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .card p {
+            margin: 0.4rem 0;
+            font-size: 0.92rem;
+            line-height: 1.4;
+        }
+
+        .card:hover {
+            border-color: #4169E1;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(65, 105, 225, 0.2);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: black;
+            font-size: 1.05rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .approach-list {
+            list-style: none;
+            margin: 20px 0 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .approach-item {
+            background: #ffffff;
+            border: 1px solid #dfe5ec;
+            border-left: 4px solid #2f5ea8;
+            border-radius: 10px;
+            padding: 16px 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        .approach-item h3 {
+            margin: 0 0 8px;
+            font-size: 1.1rem;
+            color: #111;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .approach-number {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #2f5ea8;
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .approach-item p {
+            margin: 0;
+            color: #1f1f1f;
+            font-size: 0.96rem;
+            line-height: 1.65;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        li {
+            margin: 10px 0;
+            line-height: 1.7;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            overflow: hidden;
+            font-size: 0.9rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .comparison-table th {
+            background-color: #363636;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background-color: #f0f7ff;
+        }
+
+        .comparison-table .highlight-row {
+            background-color: #e7f3ff;
+            font-weight: 600;
+        }
+
+        .table-toggle-container {
+            display: flex;
+            justify-content: flex-end;
+            margin: 8px 0 10px;
+        }
+
+        .table-toggle-btn {
+            border: 1px solid #2f5ea8;
+            background: #ffffff;
+            color: #2f5ea8;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .table-toggle-btn:hover {
+            background: #2f5ea8;
+            color: #ffffff;
+        }
+
+        .comparison-table.average-collapsed tbody tr {
+            display: none;
+        }
+
+        .comparison-table.average-collapsed tbody tr.highlight-row {
+            display: table-row;
+        }
+
+        .comparison-table.average-collapsed.expanded tbody tr {
+            display: table-row;
+        }
+
+        .table-caption {
+            margin: 12px 0 25px 0;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f1ff 100%);
+            /* border-left: 4px solid #2f5ea8; */
+            border-radius: 6px;
+            font-size: 0.94em;
+            line-height: 1.6;
+            color: #1f1f1f;
+            box-shadow: 0 2px 8px rgba(47, 94, 168, 0.1);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .citation-wrapper {
+            margin: 20px 0;
+            border: 1px solid #dbdbdb;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        }
+
+        .citation-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 14px;
+            background: linear-gradient(135deg, #f5f7fb 0%, #ebf2ff 100%);
+            border-bottom: 1px solid #dbe4f2;
+        }
+
+        .citation-title {
+            font-size: 0.88rem;
+            color: #2f5ea8;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .copy-citation-btn {
+            border: 1px solid #2f5ea8;
+            background: #fff;
+            color: #2f5ea8;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-citation-btn:hover {
+            background: #2f5ea8;
+            color: #fff;
+        }
+
+        .citation {
+            margin: 0;
+            background: #f8f9fb;
+            border-left: 4px solid #4169E1;
+            padding: 16px;
+        }
+
+        .citation pre {
+            margin: 0;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.88em;
+            line-height: 1.65;
+            color: #1f1f1f;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            margin-top: 60px;
+            background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+            border-top: 1px solid #e9ecef;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(65, 105, 225, 0.1);
+        }
+
+        .navbar nav {
+            display: flex;
+            gap: 0;
+            align-items: center;
+        }
+
+        .navbar a {
+            padding: 12px 20px;
+            color: rgb(128, 128, 128);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 3px solid transparent;
+            position: relative;
+        }
+
+        .navbar a:hover {
+            color: orange;
+            border-bottom-color: orange;
+        }
+
+        .navbar a.active {
+            color: red;
+            border-bottom-color: red;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .subtitle {
+                font-size: 1.5em;
+            }
+
+            .section {
+                padding: 20px 15px;
+            }
+
+            .section-alternate {
+                padding: 20px 15px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .links {
+                gap: 8px;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                font-size: 0.85em;
+            }
+
+            .container {
+                padding: 0 15px;
+            }
+
+            .navbar nav {
+                gap: 0;
+                overflow-x: auto;
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .navbar a {
+                padding: 12px 15px;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+
+            .approach-item {
+                padding: 14px 15px;
+            }
+
+            .approach-item h3 {
+                font-size: 1rem;
+            }
+
+            .approach-number {
+                width: 24px;
+                height: 24px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <nav>
+            <a href="#overview">Overview</a>
+            <a href="#approach">Algorithm</a>
+            <a href="#pretrain">Results</a>
+            <a href="#citation">Citation</a>
+        </nav>
+    </div>
+
+    <header>
+        <div class="container">
+            <h1>Compositional Average Velocity Modeling for Efficient Diffusion Offline Reinforcement Learning
+            </h1>
+            <div class="subtitle">IROS 2026</div>
+
+            <div class="authors">
+                <span class="author-block"><a href="https://thanhkaist.github.io/" target="_blank">Thanh Nguyen</a>, <a
+                        href="" target="_blank">Abu Hanif Muhammad Syarubany</a>, <a href="" target="_blank">Hwanhee
+                        Kim</a>, <a href="https://sanctusfactory.com/family.php" target="_blank">Chang D. Yoo</a></span>
+            </div>
+
+            <div class="affiliation">
+                <span class="author-block">KAIST</span>
+            </div>
+
+            <div class="links">
+                <span class="link-block">
+                    <a href="https://arxiv.org/" class="btn" target="_blank">
+                        <span class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z" />
+                                <path
+                                    d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z" />
+                            </svg>
+                        </span>
+                        <span>arXiv</span>
+                    </a>
+                </span>
+                <span class="link-block">
+                    <a href="https://github.com/thanhkaist/" class="btn" target="_blank">
+                        <span class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+                            </svg>
+                        </span>
+                        <span>Code</span>
+                    </a>
+                </span>
+            </div>
+        </div>
+    </header>
+
+
+    <hr class="gradient-divider">
+
+    <!-- TL;DR Section -->
+
+    <section class="section">
+        <div class="container">
+            <div class="content">
+                <div class="tldr">
+                    <strong>TL;DR:</strong>
+                    InsQL turns diffusion-style offline RL policies into a one-step generative policy.
+                    Instead of repeatedly denoising noise into an action, it learns a compositional
+                    average velocity that directly maps noise → action in a single forward pass.
+
+                    <ul>
+                        <li>🚀 <strong>One-step inference</strong> instead of multi-step denoising</li>
+                        <li>🧠 No <strong>backpropagation through time</strong> through the generative trajectory</li>
+                        <li>❌ No distillation or auxiliary models</li>
+                        <li>❌ No Jacobian computations</li>
+                        <li>🎯 Integrates directly with <strong>behavior-regularized actor–critic RL</strong></li>
+                        <li>🔎 Samples multiple one-step actions and uses <strong>Q-values to select the best</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="gradient-divider">
+
+    <!-- Abstract Figure -->
+    <section id="overview" class="section-white">
+        <div class="container">
+            <h2>Overview</h2>
+            <div class="content">
+                <div class="media-container"> <img src="images/abstract_image_page.png" alt="InsQL Overview">
+                    <div class="caption"> Instant Flow Q-Learning (InsQL) overview. (a) Standard flow-matching
+                        (diffusion) policies learn an instantaneous marginal velocity field \(v(a_t,t,s)\) and generate
+                        actions through multi-step integration. (b) InsQL instead learns an average-velocity field
+                        \(u(a_t,n,t,s)\) over finite intervals, enabling single-step action generation by directly
+                        mapping noise to actions. (c) Velocity composition: long-range average velocities are
+                        recursively composed from shorter-range velocities; in the infinitesimal limit, this recovers
+                        the marginal velocity of flow matching. (d) InsQL integrates the one-step policy into a
+                        behavior-regularized actor–critic framework without backpropagation through time, with optional
+                        Q-guided candidate selection for test-time refinement. </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="gradient-divider">
+
+    <!-- Approach Overview -->
+<section id="approach" class="section-alternate">
+    <div class="container">
+        <h2>Algorithm Overview</h2>
+        <div class="content">
+            <p>Three key components of InsQL:</p>
+
+            <ul class="approach-list">
+
+                <li class="approach-item">
+                    <h3><span class="approach-number">1</span>Compositional Average-Velocity Learning</h3>
+                    <p>
+                        Standard flow matching learns instantaneous velocity fields and requires multiple
+                        integration steps to generate actions. InsQL instead learns average velocities over
+                        finite intervals, whose compositional property allows long-range velocities to be
+                        computed from shorter-range velocities. This enables a direct one-step mapping from
+                        noise to actions.
+                    </p>
+                </li>
+
+                <li class="approach-item">
+                    <h3><span class="approach-number">2</span>Flow-Consistent Policy Learning</h3>
+                    <p>
+                        To ensure the learned average-velocity field follows the underlying flow dynamics,
+                        InsQL anchors the model to the marginal velocity at small intervals. These constraints
+                        are incorporated directly into the behavior cloning objective, allowing the policy to
+                        consistently learn average velocities across different ranges without auxiliary models,
+                        distillation, or multi-stage training.
+                    </p>
+                </li>
+
+                <li class="approach-item">
+                    <h3><span class="approach-number">3</span>Single-Step Q-Learning with Q-Guided Selection</h3>
+                    <p>
+                        InsQL integrates the one-step generative policy into a behavior-regularized,
+                        DDPG-style actor–critic framework without backpropagation through time. At inference,
+                        multiple candidate actions can be generated in a single forward pass and refined
+                        through Q-guided candidate selection, improving action quality without iterative
+                        denoising.
+                    </p>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+
+    <hr class="gradient-divider">
+
+
+
+<section id="results" class="section">
+    <div class="container">
+        <h2>Experimental Results</h2>
+
+        <div class="content">
+
+            <div class="research-question">
+                Q1: Can InsQL outperform both diffusion-based and existing one-step policies?
+            </div>
+
+            <p>
+                <strong>Answer:</strong> Yes. InsQL consistently outperforms both multi-step
+                diffusion policies and existing one-step generative policies across a range of
+                offline reinforcement learning benchmarks.
+            </p>
+
+            <p>
+                On MuJoCo locomotion tasks, InsQL achieves an average score of
+                <strong>92.1</strong>, surpassing DQL (89.0) and FQL (79.2). InsQL also achieves
+                strong performance on challenging long-horizon domains, including AntMaze
+            </p>
+
+            <div class="media-container">
+                <img src="images/main_results.png" alt="Main Results">
+                <p class="table-caption">
+                    <strong>Figure:</strong> InsQL consistently outperforms both diffusion-based
+                    and one-step baselines across diverse offline reinforcement learning benchmarks.
+                </p>
+            </div>
+
+
+            <div class="research-question">
+                Q2: Can one-step generation overcome the diffusion-policy bottleneck?
+            </div>
+
+            <p>
+                <strong>Answer:</strong> Yes. Existing approaches often suffer a significant
+                performance drop when diffusion sampling is reduced to a single step. InsQL
+                avoids this degradation while achieving performance comparable to or better
+                than multi-step diffusion policies.
+            </p>
+
+            <p>
+                By learning compositional average velocities instead of relying on iterative
+                denoising, InsQL preserves the expressiveness of generative policies while
+                enabling direct noise-to-action generation in a single forward pass.
+            </p>
+
+
+            <div class="research-question">
+                Q3: Does InsQL improve practical efficiency?
+            </div>
+
+            <p>
+                <strong>Answer:</strong> Yes. InsQL significantly reduces both training and
+                inference costs.
+            </p>
+
+            <p>
+                InsQL eliminates iterative denoising and backpropagation through time,
+                allowing actions to be generated in a single forward pass. Compared with DQL,
+                InsQL achieves up to <strong>3.6× faster inference</strong> while substantially
+                reducing training time and maintaining strong policy performance.
+            </p>
+
+            <div class="media-container">
+                <img src="images/efficiency_comparison.png" alt="Efficiency Comparison">
+                <p class="table-caption">
+                    <strong>Figure:</strong> InsQL delivers strong performance while substantially
+                    improving both training and inference efficiency.
+                </p>
+            </div>
+
+
+            <div class="research-question">
+                Q4: How many Q-guided candidates are needed to improve performance?
+            </div>
+
+            <p>
+                <strong>Answer:</strong> Around <strong>5 candidates</strong> provide a significant
+                performance improvement compared with using no Q-guided selection.
+            </p>
+
+            <p>
+                At inference time, InsQL can sample multiple candidate actions in a single
+                forward pass and select the action with the highest predicted Q-value. This
+                provides an effective way to improve action quality without introducing
+                iterative denoising.
+            </p>
+
+            <div class="media-container">
+                <img src="images/Qcandidate_comparison.png" alt="Q-Guided Candidate Selection">
+                <p class="table-caption">
+                    <strong>Figure:</strong> Ablation study on the effect of Q-guided candidate
+                    selection on HalfCheetah. <em>K</em> denotes the number of candidate actions
+                    sampled per state; the action with the highest predicted Q-value is selected.
+                </p>
+            </div>
+
+
+            <div class="research-question">
+                Q5: Where can I find more results?
+            </div>
+
+            <p>
+                <strong>Answer:</strong> Please refer to our paper for additional experimental
+                results, ablations, and analysis.
+            </p>
+
+        </div>
+    </div>
+</section>
+
+
+
+
+
+
+    <hr class="gradient-divider">
+    <!-- Citation -->
+    <section id="citation" class="section">
+        <div class="container">
+            <h2>Citation</h2>
+            <div class="content">
+                <div class="citation-wrapper">
+                    <div class="citation-header">
+                        <span class="citation-title">BibTeX</span>
+                        <button class="copy-citation-btn" type="button" id="copy-citation-btn">Copy</button>
+                    </div>
+                    <div class="citation">
+                        <pre id="citation-text">@misc{nguyen2026insql,
+      title={Compositional Average Velocity Modeling for Efficient Diffusion Offline Reinforcement Learning}, 
+      author={Thanh Nguyen and Abu Hanif Muhammad Syarubany and Hwanhee Kim and Chang D. Yoo},
+      year={2026},
+      eprint={2606},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs}, 
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 InsQL Project. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.table-toggle-btn').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var tableId = button.getAttribute('data-target-table');
+                var table = document.getElementById(tableId);
+                if (!table) {
+                    return;
+                }
+
+                var expanded = table.classList.toggle('expanded');
+                button.setAttribute('aria-expanded', String(expanded));
+                button.textContent = expanded ? 'Hide detailed rows' : 'Show all result rows';
+            });
+        });
+
+        var copyCitationBtn = document.getElementById('copy-citation-btn');
+        var citationText = document.getElementById('citation-text');
+
+        if (copyCitationBtn && citationText) {
+            copyCitationBtn.addEventListener('click', function () {
+                navigator.clipboard.writeText(citationText.textContent).then(function () {
+                    copyCitationBtn.textContent = 'Copied';
+                    setTimeout(function () {
+                        copyCitationBtn.textContent = 'Copy';
+                    }, 1200);
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
